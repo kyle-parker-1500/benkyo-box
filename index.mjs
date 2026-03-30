@@ -1,6 +1,7 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
 import { loadEnvFile } from 'node:process';
+import { flashcard } from './benkyobox_library/flashcard.mjs';
 
 loadEnvFile();
 const app = express();
@@ -23,7 +24,31 @@ const pool = mysql.createPool({
 
 //routes
 app.get('/', (req, res) => {
-   res.send('Hello Express app!')
+    res.render("home.ejs");
+});
+
+app.use(express.urlencoded({ extended: true }));
+
+// updating db with flashcard information
+app.post('/submit-card', async (req, res) => {
+    const {
+        question,
+        questionSrc,
+        questionAlt,
+        answer,
+        answerSrc,
+        answerAlt
+    } = req.body;
+    
+    // pass to db
+    try {
+        let sql = 'INSERT INTO cards (question, questionSrc, questionAlt, answer, answerSrc, answerAlt) VALUES (?, ?, ?, ?, ?, ?)';
+        await pool.query(sql, [question, questionSrc, questionAlt, answer, answerSrc, answerAlt]);
+        res.json({ question, questionSrc, questionAlt, answer, answerSrc, answerAlt });
+    } catch (err) {
+        console.log("Error updating db");
+        res.status(500).send('Database error');
+    }
 });
 
 // dbTest

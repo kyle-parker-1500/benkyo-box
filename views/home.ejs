@@ -1,0 +1,65 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+    <head>
+        <title>Benkyo Box</title>
+        <%- include("./partials/header.ejs") %>
+    </head>
+    <body>
+        <div class="m-10">
+            <label for="createCardform">Create Card</label>
+            <div class="mb-3">
+                <label for="questionInput" class="form-label">Question:</label>
+                <input type="text" class="form-control" id="questionInput" name="questionInput" aria-describedby="getQuestionText">
+            </div>
+            <div class="mb-3">
+                <label for="questionImg" class="form-label">Image:</label>
+                <input type="text" class="form-control" id="questionImg" name="questionImg" aria-describedby="getQuestionImg">
+            </div>
+            <div class="mb-3">
+                <label for="questionImgAlt" class="form-label">Image Alt:</label>
+                <input type="text" class="form-control" id="questionImgAlt" name="questionImgAlt" aria-describedby="getQuestionImgAlt">
+            </div>
+            
+            <div class="mb-3">
+                <label for="answerInput" class="form-label">Answer:</label>
+                <input type="text" class="form-control" id="answerInput" name="answerInput" aria-describedby="getAnswerText">
+            </div>
+            <div class="mb-3">
+                <label for="answerImg" class="form-label">Image:</label>
+                <input type="text" class="form-control" id="answerImg" name="answerImg" aria-describedby="getAnswerImg">
+            </div>
+            <div class="mb-3">
+                <label for="answerImgAlt" class="form-label">Image Alt:</label>
+                <input type="text" class="form-control" id="answerImgAlt" name="answerImgAlt" aria-describedby="getAnswerImgAlt">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" onclick="">Submit</button>
+        </div>
+        <script defer>
+            import { Card } from './benkyobox_library/Card.mjs';
+            
+            async function updateCard(event) {
+                event.preventDefault();
+                
+                // get form data
+                let question = document.querySelector("#questionInput").value;
+                let questionSrc = document.querySelector("#questionImg").value;
+                let questionAlt = document.querySelector("#questionImgAlt").value;
+
+                let answer = document.querySelector("#answerInput").value;
+                let answerSrc = document.querySelector("#answerImg").value;
+                let answerAlt = document.querySelector("#answerImgAlt").value;
+                
+                // create new card with data
+                let card = new Card(question, questionSrc, questionAlt, answer, answerSrc, answerAlt);
+
+                // post to backend
+                const res = await fetch('/submit-card', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question, questionSrc, questionAlt, answer, answerSrc, answerAlt })
+                });
+            }
+        </script>
+    </body>
+</html>
